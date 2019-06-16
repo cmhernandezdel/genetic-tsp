@@ -1,4 +1,19 @@
-from random import choice
+from random import randint
+
+"""
+Genetic algorithm to solve the Travelling Salesman Problem.
+
+Each individual is a list containing the position of the city visited in that order,
+i.e., if the cities are: A, B, C, D, E, F
+each individual will be something like:
+2, 1, 3, 1, 0
+where, taking into account the cities from B to F only (since A is always the first one),
+and assuming that if we choose a city that is out of bounds, we take the last,
+this would mean that the order is:
+A (implicit), D, C, F, E, B, A (implicit, since we have to return to the first city)
+
+"""
+
 
 def read_distances_table(distances_file):
   """ Read distances from a matrix file.
@@ -36,13 +51,18 @@ def generate_initial_population(size, distances_table, individual_size):
   individual_size -- the size of every individual
 
   Return value:
+  population -- a list containing the individuals of the starting population
   """
-  cities_list = list(distances_table.keys())
+  number_of_cities = len(distances_table.keys()) - 2
   population = []
   for i in range(size):
     individual = []
-    for i in range(individual_size):
-      individual.append(choice(cities_list))
+    cities_visited = 0
+    for j in range(individual_size):
+      # Take indices from 0 (B) to the last city remaining (initially cities-2)
+      individual.append(randint(0, number_of_cities - cities_visited))
+      # Substract 1 every time we visit a city
+      cities_visited += 1
     population.append(individual)
   return population
 

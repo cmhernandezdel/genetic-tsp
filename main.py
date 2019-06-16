@@ -1,8 +1,13 @@
+from random import choice
+
 def read_distances_table(distances_file):
   """ Read distances from a matrix file.
 
   Keyword arguments:
   distances_file -- the file where the matrix is stored
+
+  Return value:
+  distances_table -- a dictionary with the distances between each city
   """
 
   with open(distances_file, 'r') as distances_matrix:
@@ -22,6 +27,26 @@ def read_distances_table(distances_file):
     # Return distances table
     return distances_table
 
+def generate_initial_population(size, distances_table, individual_size):
+  """ Generate a random starting population.
+
+  Keyword arguments:
+  size -- the size of the population
+  distances_table -- the distances table obtained through read_distances_table
+  individual_size -- the size of every individual
+
+  Return value:
+  """
+  cities_list = list(distances_table.keys())
+  population = []
+  for i in range(size):
+    individual = []
+    for i in range(individual_size):
+      individual.append(choice(cities_list))
+    population.append(individual)
+  return population
+
 
 distances = read_distances_table("distances.txt")
-print(distances)
+starting_population = generate_initial_population(10, distances, 5)
+print(starting_population)

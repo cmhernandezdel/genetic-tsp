@@ -66,6 +66,16 @@ def generate_initial_population(size, distances_table, individual_size):
     population.append(individual)
   return population
 
+def get_fitness(individual):
+  """ Get the fitness of an individual.
+
+  Keyword arguments:
+  individual -- the individual to evaluate
+
+  Return value:
+  fitness -- the fitness of that individual
+  """
+  
 
 distances = read_distances_table("distances.txt")
 starting_population = generate_initial_population(10, distances, 5)

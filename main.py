@@ -12,6 +12,8 @@ and assuming that if we choose a city that is out of bounds, we take the last,
 this would mean that the order is:
 A (implicit), D, C, F, E, B, A (implicit, since we have to return to the first city)
 
+Fitness is the total distance traveled, and we want to minimize it
+
 """
 
 
@@ -66,17 +68,38 @@ def generate_initial_population(size, distances_table, individual_size):
     population.append(individual)
   return population
 
-def get_fitness(individual):
+def get_fitness(individual, cities, distances_table):
   """ Get the fitness of an individual.
 
   Keyword arguments:
   individual -- the individual to evaluate
+  cities -- a list containing the cities excluding the first one
+  distances_table -- the distances table obtained through get_distances_table
 
   Return value:
   fitness -- the fitness of that individual
   """
-  
+  last_city = 'A'
+  fitness = 0
+  for gene in individual:
+    # Get the city with index = gene in the list and remove it
+    # If out of bounds, get the last (this can happen when crossing individuals or mutating)
+    index = gene if (gene < len(cities)) else len(cities)-1
+    current_city = cities.pop(index)
+    # Update fitness and mark this city as the last one visited
+    fitness = fitness + int(distances_table[last_city][current_city])
+    last_city = current_city
+  # When we get here, we have every city except the last: simply add it
+  fitness = fitness + int(distances_table[last_city][cities[0]])
+  last_city = cities[0]
+  # And then, back to the first city
+  fitness = fitness + int(distances_table[last_city]['A'])
+  return fitness
 
 distances = read_distances_table("distances.txt")
+cities_list = list(distances.keys())
+cities_list.sort()
+cities_list.remove('A')
 starting_population = generate_initial_population(10, distances, 5)
-print(starting_population)
+print(starting_population[0])
+print(get_fitness(starting_population[0], cities_list, distances))

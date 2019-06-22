@@ -1,4 +1,5 @@
 from random import randint
+from random import random
 
 """
 Genetic algorithm to solve the Travelling Salesman Problem.
@@ -10,9 +11,15 @@ each individual will be something like:
 where, taking into account the cities from B to F only (since A is always the first one),
 and assuming that if we choose a city that is out of bounds, we take the last,
 this would mean that the order is:
-A (implicit), D, C, F, E, B, A (implicit, since we have to return to the first city)
+A (implicit), D, C, F, E, B, A (implicit, since we have to return to the first city).
 
-Fitness is the total distance traveled, and we want to minimize it
+Fitness is the total distance traveled, and we want to minimize it.
+
+Mutation is simple: with a certain probability, replace a random gene with a random number.
+
+Cross is a simple, one-point cross in half, generating two individuals.
+
+Selection is done using tourneys.
 
 """
 
@@ -96,10 +103,47 @@ def get_fitness(individual, cities, distances_table):
   fitness = fitness + int(distances_table[last_city]['A'])
   return fitness
 
+def mutation(individual, cities, probability):
+  """ Mutate an individual, changing one of its genes with a given probability.
+
+  Keyword arguments:
+  individual -- the individual to mutate
+  cities --  a list containing the cities excluding the first one
+  probability -- the probability of the mutation to happen
+
+  Return value:
+  individual -- the mutated individual
+  """
+  if(random() >= probability):
+    return individual
+  mutation_index = randint(0, len(individual) - 1)
+  mutation_value = randint(0, len(cities) - 1)
+  individual[mutation_index] = mutation_value
+  return individual
+
+def cross(parent1, parent2):
+  """ Cross two individuals, mixing their genes to create two new individuals.
+
+  Cross is a simple one-point cross, with that point being in half
+
+  Keyword arguments:
+  parent1, parent2 -- the individuals to cross
+
+  Return value: child1, child2 -- the new individuals
+  """
+  crossing_point = int(len(parent1) / 2)
+  child1 = parent1[0:crossing_point] + parent2[crossing_point:len(parent2)]
+  child2 = parent2[0:crossing_point] + parent1[crossing_point:len(parent1)]
+  return child1, child2
+
+
 distances = read_distances_table("distances.txt")
 cities_list = list(distances.keys())
 cities_list.sort()
 cities_list.remove('A')
 starting_population = generate_initial_population(10, distances, 5)
 print(starting_population[0])
-print(get_fitness(starting_population[0], cities_list, distances))
+print(starting_population[1])
+child1, child2 = cross(starting_population[0], starting_population[1])
+print(child1)
+print(child2)

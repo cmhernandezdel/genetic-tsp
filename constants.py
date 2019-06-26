@@ -1,0 +1,3 @@
+DISTANCES_FILE = "distances.txt"
+STARTING_CITY = 'A'
+POPULATION_SIZE = 20

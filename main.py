@@ -1,5 +1,6 @@
 from random import randint
 from random import random
+from random import choice
 import constants
 
 """
@@ -145,6 +146,42 @@ def cross(parent1, parent2):
   child2 = parent2[0:crossing_point] + parent1[crossing_point:len(parent1)]
   return child1, child2
 
+def population_cross(population):
+  """ Cross the individuals in an intermediate population.
+
+  Keyword arguments:
+  population -- the intermediate population to cross
+
+  Return value:
+  intermediate_population -- the crossed population
+  """
+  intermediate_population = []
+  iterations = len(population) if len(population) % 2 == 0 else len(population) + 1
+  for i in range(iterations):
+    child1, child2 = cross(choice(population), choice(population))
+    intermediate_population.append(child1)
+    intermediate_population.append(child2)
+  # We need to keep the population size equal
+  if(len(population) != len(intermediate_population)):
+    intermediate_population.remove(choice(intermediate_population))
+  return intermediate_population
+
+def population_mutation(population, probability, cities):
+  """ Mutate the population
+
+  Keyword arguments:
+  population -- the population to mutate
+  probability -- the probability of the mutation to happen
+  cities --  a list containing the cities excluding the first one
+
+  Return value:
+  intermediate_population -- the mutated population
+  """
+  intermediate_population = []
+  for individual in population:
+    intermediate_population.apppend(mutation(individual, cities, probability))
+  return intermediate_population
+
 def get_population_fitness(population, flist, cities, distances_table):
   """ Update fitness list in order to avoid extra calculations
 
@@ -163,6 +200,48 @@ def get_population_fitness(population, flist, cities, distances_table):
   return flist
 
 
+def selection(population, flist):
+  """ Do N tourneys among the individuals in population, simulating natural selection
+
+  Keyword arguments:
+  population -- the complete population of individuals
+  flist -- the list of fitness of the population
+
+  Return value:
+  intermediate_population -- the new population
+  """
+  intermediate_population = []
+  while len(intermediate_population) < len(population):
+    arena = []
+    while len(arena) < constants.TOURNEY_SIZE:
+      # Append just the index because it is faster and we do not need anything else
+      arena.append(randint(0, len(population) - 1))
+    # Search for the lowest fitness individual  
+    min_index = 0  
+    min_val = population[0]
+    for ind in arena:
+      if(population[ind] < min_val):
+        min_val = population[ind]
+        min_index = ind
+    # Add that individual to the population
+    intermediate_population.append(population[arena[min_index]])
+  return intermediate_population
+
+def get_best_individual_and_fitness(population, flist):
+  """ Return the best individual and fitness of the current population
+
+  Keyword arguments:
+  population -- the complete population of individuals
+  flist -- the list of fitness of the population
+
+  Return value:
+  best_individual -- the best individual of the population
+  best_fitness -- the fitness of best_individual
+  """
+  best_fitness = min(flist)
+  best_individual = population[population.index(best_fitness)]
+  return best_individual, best_fitness
+    
 
 # Get the distances table from the distances file
 distances = read_distances_table(constants.DISTANCES_FILE)
@@ -172,11 +251,27 @@ cities_list = list(distances.keys())
 cities_list.sort()
 cities_list.remove('A')
 
-# Generate the starting population
-starting_population = generate_initial_population(constants.POPULATION_SIZE, len(cities_list) - 1)
+# Generate the starting population and starting parameters
+current_population = generate_initial_population(constants.POPULATION_SIZE, len(cities_list) - 1)
+fitness_list = [float("inf") for i in range(len(current_population))]
+last_fitness = float("inf")
+iteration = 0
 
-fitness_list = [float("inf") for i in range(len(starting_population))]
-fitness_list = get_population_fitness(starting_population, fitness_list, cities_list, distances)
-print(fitness_list)
+while(True):
+  # Update fitness list with the current population, best individual and best fitness
+  fitness_list = get_population_fitness(current_population, fitness_list, cities_list, distances)
+  current_best_individual, current_best_fitness = get_best_individual_and_fitness(current_population, fitness_list)
+  # Print info if fitness changed
+  if(current_best_fitness != last_fitness):
+    print("Iteration " + str(iteration) ", best fitness: " + str(current_best_fitness))
+  # Stop condition: if best fitness is lower than a given threshold
+  if(current_best_fitness < constants.THRESHOLD):
+    break
+
+  # Operators: selection, then cross, then mutation
+  after_selection_population = selection(current_population, fitness_list)
+  after_cross_population = 
+  
+
 
 

@@ -270,7 +270,8 @@ while(True):
 
   # Operators: selection, then cross, then mutation
   after_selection_population = selection(current_population, fitness_list)
-  after_cross_population = 
+  after_cross_population = population_cross(after_selection_population)
+  after_mutation_population = population_mutation(after_cross_population, constants.MUTATION_PROBABILITY, cities_list)
   
 
 

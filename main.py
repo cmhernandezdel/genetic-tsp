@@ -156,7 +156,7 @@ def population_cross(population):
   intermediate_population -- the crossed population
   """
   intermediate_population = []
-  iterations = len(population) if len(population) % 2 == 0 else len(population) + 1
+  iterations = int(len(population)/2) if len(population) % 2 == 0 else int((len(population) + 1)/2)
   for i in range(iterations):
     child1, child2 = cross(choice(population), choice(population))
     intermediate_population.append(child1)
@@ -179,7 +179,7 @@ def population_mutation(population, probability, cities):
   """
   intermediate_population = []
   for individual in population:
-    intermediate_population.apppend(mutation(individual, cities, probability))
+    intermediate_population.append(mutation(individual, cities, probability))
   return intermediate_population
 
 def get_population_fitness(population, flist, cities, distances_table):
@@ -218,13 +218,13 @@ def selection(population, flist):
       arena.append(randint(0, len(population) - 1))
     # Search for the lowest fitness individual  
     min_index = 0  
-    min_val = population[0]
+    min_val = flist[0]
     for ind in arena:
-      if(population[ind] < min_val):
-        min_val = population[ind]
+      if(flist[ind] < min_val):
+        min_val = flist[ind]
         min_index = ind
     # Add that individual to the population
-    intermediate_population.append(population[arena[min_index]])
+    intermediate_population.append(population[min_index])
   return intermediate_population
 
 def get_best_individual_and_fitness(population, flist):
@@ -239,7 +239,7 @@ def get_best_individual_and_fitness(population, flist):
   best_fitness -- the fitness of best_individual
   """
   best_fitness = min(flist)
-  best_individual = population[population.index(best_fitness)]
+  best_individual = population[flist.index(best_fitness)]
   return best_individual, best_fitness
     
 
@@ -263,7 +263,7 @@ while(True):
   current_best_individual, current_best_fitness = get_best_individual_and_fitness(current_population, fitness_list)
   # Print info if fitness changed
   if(current_best_fitness != last_fitness):
-    print("Iteration " + str(iteration) ", best fitness: " + str(current_best_fitness))
+    print("Iteration " + str(iteration) + ", best fitness: " + str(current_best_fitness))
   # Stop condition: if best fitness is lower than a given threshold
   if(current_best_fitness < constants.THRESHOLD):
     break
@@ -271,8 +271,11 @@ while(True):
   # Operators: selection, then cross, then mutation
   after_selection_population = selection(current_population, fitness_list)
   after_cross_population = population_cross(after_selection_population)
-  after_mutation_population = population_mutation(after_cross_population, constants.MUTATION_PROBABILITY, cities_list)
+  current_population = population_mutation(after_cross_population, constants.MUTATION_PROBABILITY, cities_list)
   
+  # Update iteration number and last fitness
+  iteration += 1
+  last_fitness = current_best_fitness
 
 
 

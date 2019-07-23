@@ -1,0 +1,15 @@
+            Fuenlabrada Leganes Mostoles Alcorcon Getafe Parla Alcobendas SSR Madrid Pozuelo Valdemoro Humanes Chinchon Aranjuez
+Fuenlabrada 0           10      8        10       10     22    41         47  24     30      22        5       50       48
+Leganes     10          0       16       9        7      25    33         40  17     21      25        13      53       51
+Mostoles    8           16      0        6        22     25    45         51  22     27      28        11      56       53
+Alcorcon    10          9       6        0        13     26    38         45  15     20      28        13      57       54
+Getafe      10          7       22       13       0      12    33         39  15     27      17        13      45       47
+Parla       22          25      25       26       12     0     43         49  25     37      13        11      42       39
+Alcobendas  41          33      45       38       33     43    0          4   20     21      42        50      59       73
+SSR         47          40      51       45       39     49    4          0   24     27      48        56      65       79
+Madrid      24          17      22       15       15     25    20         24  0      21      28        26      48       49
+Pozuelo     30          21      27       20       27     37    21         27  21     0       40        31      61       71
+Valdemoro   22          25      28       28       17     13    42         48  28     40      0         20      29       31
+Humanes     5           13      11       13       13     11    50         56  26     31      20        0       48       45
+Chinchon    50          53      56       57       45     42    59         65  48     61      29        48      0        23
+Aranjuez    48          51      53       54       47     39    73         79  49     71      31        45      23       0

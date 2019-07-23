@@ -15,6 +15,9 @@ Genetic algorithms are metaheuristics based on natural selection and evolution o
 
 In order to understand the algorithm, some key concepts must be explained, such as gene, individual, population or tournament. A lot of quick definitions can be found in the <a href="https://en.wikipedia.org/wiki/Genetic_algorithm">Wikipedia article</a>, and there are several books that cover this topic.
 
+<h2> Does this have any utility in real life? </h2>
+Yes. As said before, genetic algorithms have a lot of utility in optimization problems, e.g., getting the cheapest plane ticket combination, scheduling tasks... but also in design (e.g., designing an antenna). Their main problem is that they are too specific for a problem, although the concept is always the same. This means that every problem will have different optimal parameters. Given the time to find those parameters, the algorithms are pretty good at their job.
+
 <h2> Files found in this repository </h2>
 <h3> Distances file </h3>
 The distances file is a matrix representation of the cities and the distances between them. It contains one header line with as many cities as desired and then as many lines as cities. Each one of these lines starts with a city label and then the distances.

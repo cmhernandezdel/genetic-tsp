@@ -2,6 +2,7 @@ from random import randint
 from random import random
 from random import choice
 import constants
+import sys
 
 """
 Genetic algorithm to solve the Travelling Salesman Problem.
@@ -21,7 +22,7 @@ Mutation is simple: with a certain probability, replace a random gene with a ran
 
 Cross is a simple, one-point cross in half, generating two individuals.
 
-Selection is done using tourneys.
+Selection is done using tournaments.
 
 """
 
@@ -38,7 +39,7 @@ def read_distances_table(distances_file):
 
   with open(distances_file, 'r') as distances_matrix:
     # Get the names of the cities
-    cities = distances_matrix.readline().rstrip().split(' ')[2:]
+    cities = distances_matrix.readline().rstrip().split()
 
     # Get the distances between the cities and store them in a data structure
     # We will use nested dictionaries, where the first key is the starting city
@@ -47,7 +48,7 @@ def read_distances_table(distances_file):
     distances_table = dict()
     for city_key in cities:
       distances_table[city_key] = dict()
-      distances_from_this_city = distances_matrix.readline().rstrip().split(' ')[1:]
+      distances_from_this_city = distances_matrix.readline().rstrip().split()[1:]
       city_n = 0
       for city in cities:
         distances_table[city_key][city] = distances_from_this_city[city_n]
@@ -68,10 +69,10 @@ def generate_initial_population(size, individual_size):
   """
 
   population = []
-  for i in range(size):
+  for _ in range(size):
     individual = []
     cities_visited = 0
-    for j in range(individual_size):
+    for _ in range(individual_size):
       # Take indices from 0 (B) to the last city remaining (initially, cities-2)
       # Individual size is cities - 2, that is why it is the starting value
       # This helps us build better individuals than if we chose random numbers
@@ -107,7 +108,7 @@ def get_fitness(individual, cities, distances_table):
   fitness = fitness + int(distances_table[last_city][cities[0]])
   last_city = clist[0]
   # And then, back to the first city
-  fitness = fitness + int(distances_table[last_city]['A'])
+  fitness = fitness + int(distances_table[last_city][constants.STARTING_CITY])
   return fitness
 
 def mutation(individual, cities, probability):
@@ -140,7 +141,6 @@ def cross(parent1, parent2):
   Return value: 
   child1, child2 -- the new individuals
   """
-
   crossing_point = int(len(parent1) / 2)
   child1 = parent1[0:crossing_point] + parent2[crossing_point:len(parent2)]
   child2 = parent2[0:crossing_point] + parent1[crossing_point:len(parent1)]
@@ -157,11 +157,11 @@ def population_cross(population):
   """
   intermediate_population = []
   iterations = int(len(population)/2) if len(population) % 2 == 0 else int((len(population) + 1)/2)
-  for i in range(iterations):
+  for _ in range(iterations):
     child1, child2 = cross(choice(population), choice(population))
     intermediate_population.append(child1)
     intermediate_population.append(child2)
-  # We need to keep the population size equal
+  # We need to keep the population size equal if population number is odd
   if(len(population) != len(intermediate_population)):
     intermediate_population.remove(choice(intermediate_population))
   return intermediate_population
@@ -201,9 +201,9 @@ def get_population_fitness(population, flist, cities, distances_table):
 
 
 def selection(population, flist):
-  """ Do N tourneys among the individuals in population, simulating natural selection
+  """ Do N tournaments among the individuals in population, simulating natural selection
 
-  Keyword arguments:
+  Keyword arguments: 
   population -- the complete population of individuals
   flist -- the list of fitness of the population
 
@@ -213,12 +213,12 @@ def selection(population, flist):
   intermediate_population = []
   while len(intermediate_population) < len(population):
     arena = []
-    while len(arena) < constants.TOURNEY_SIZE:
+    while len(arena) < constants.TOURNAMENT_SIZE:
       # Append just the index because it is faster and we do not need anything else
       arena.append(randint(0, len(population) - 1))
     # Search for the lowest fitness individual  
     min_index = 0  
-    min_val = flist[0]
+    min_val = float("inf")
     for ind in arena:
       if(flist[ind] < min_val):
         min_val = flist[ind]
@@ -249,7 +249,7 @@ distances = read_distances_table(constants.DISTANCES_FILE)
 # Get the list of the cities without the first one for evaluation
 cities_list = list(distances.keys())
 cities_list.sort()
-cities_list.remove('A')
+cities_list.remove(constants.STARTING_CITY)
 
 # Generate the starting population and starting parameters
 current_population = generate_initial_population(constants.POPULATION_SIZE, len(cities_list) - 1)
@@ -276,6 +276,3 @@ while(True):
   # Update iteration number and last fitness
   iteration += 1
   last_fitness = current_best_fitness
-
-
-
